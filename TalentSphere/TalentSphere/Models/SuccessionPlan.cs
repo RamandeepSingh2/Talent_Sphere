@@ -1,13 +1,28 @@
-﻿namespace TalentSphere.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace TalentSphere.Models
 {
 	public class SuccessionPlan
 	{
-		public int SuccessionID { get; set; }
-		public int EmployeeID { get; set; }
-		//public Employee Employee { get; set; }
+		[Key]
+		public int SuccessionId { get; set; }
+
+		[Required]
+		[ForeignKey("Employee")]
+		public int EmployeeId { get; set; }
+
+		[Required]
+		[StringLength(100)]
 		public string Position { get; set; }
+		[Required]
+		[StringLength(255)]
 		public string Timeline { get; set; }
-		public string Status { get; set; }
+
+		[StringLength(50)]
+		public string status { get; set; }
+
+
 
 	}
 }

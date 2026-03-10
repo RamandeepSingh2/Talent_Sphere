@@ -1,15 +1,28 @@
-﻿namespace TalentSphere.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace TalentSphere.Models
 {
 	public class Enrollment
 	{
+		[Key]
 		public int EnrollmentID { get; set; }
-		public int TrainingID { get; set; }
-		public Training Training { get; set; }
-	
-		public int EmployeeID { get; set; }
-//public Employee Employee { get; set; }
 
+		[Required]
+		[ForeignKey("Training")]
+		public int TrainingID { get; set; }
+
+		[Required]
+		[ForeignKey("Employee")]
+		public int EmployeeID { get; set; }
+
+		[Required]
 		public DateOnly Date { get; set; }
-		public string Status { get; set; }
+
+		[Required]
+		[StringLength(50)]
+		public string status { get; set; }
+
+		
 	}
 }
