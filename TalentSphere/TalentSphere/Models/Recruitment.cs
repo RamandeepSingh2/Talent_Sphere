@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
  
-namespace TalentSphereAPI.Models
+namespace TalentSphere.Models
 {
     public class Job
     {
