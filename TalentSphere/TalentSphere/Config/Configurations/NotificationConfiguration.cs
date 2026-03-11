@@ -12,14 +12,38 @@ namespace TalentSphere.Config.Configurations
             builder.ToTable("Notifications");
             builder.HasKey(n => n.NotificationID);
 
-            builder.Property(n => n.Message).IsRequired();
-            builder.Property(n => n.Category).HasMaxLength(100);
+            builder.Property(n => n.Message).IsRequired().HasMaxLength(1000);
+            builder.Property(n => n.Category)
+                   .HasConversion<string>()
+                   .HasMaxLength(50)
+                   .IsRequired();
 
-            builder.Property(n => n.Status).HasDefaultValue(NotificationStatus.Unread).IsRequired();
+            builder.Property(n => n.Status)
+                   .HasConversion<string>()
+                   .HasMaxLength(20)
+                   .HasDefaultValue(NotificationStatus.Unread)
+                   .IsRequired();
 
-            builder.Property(n => n.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            builder.Property(n => n.CreatedAt)
+                   .HasDefaultValueSql("GETUTCDATE()");
+
+            builder.Property(n => n.UpdatedAt)
+                     .HasDefaultValueSql("GETUTCDATE()")
+                     .ValueGeneratedOnAddOrUpdate(); // Tells EF this value changes on every update
+
+            builder.Property(n => n.IsDeleted)
+                   .HasDefaultValue(false);
+
+            // Global Filter: Deleted records automatically hides
+            builder.HasQueryFilter(n => !n.IsDeleted);
 
             builder.HasOne(n => n.User).WithMany().HasForeignKey(n => n.UserID).OnDelete(DeleteBehavior.Cascade);
+
+            //  Performance Indexing
+            // Index UserID to speed up fetching notifications for a specific user.
+            builder.HasIndex(n => n.UserID);
+
+           
         }
     }
 }

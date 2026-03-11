@@ -2,7 +2,7 @@ namespace TalentSphere.Enums
 {
     public enum NotificationStatus
     {
-        Unread,
-        Read
+        Unread = 1,
+        Read = 2
     }
 }

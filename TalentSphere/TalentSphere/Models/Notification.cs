@@ -16,14 +16,15 @@ namespace TalentSphere.Models
 
         public string Message { get; set; }
 
-        public string Category { get; set; }
+        public NotificationCategory Category { get; set; }
 
-        public NotificationStatus Status { get; set; } = NotificationStatus.Unread;
+        public NotificationStatus Status { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
 
-        public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
 
+        public bool IsDeleted { get; set; }
         public virtual User User { get; set; }
     }
 }

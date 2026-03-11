@@ -1,4 +1,5 @@
-﻿
+﻿using System;
+using TalentSphere.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -14,11 +15,12 @@ namespace TalentSphere.Models
 
         public string Timeline { get; set; }
 
-        public string Status { get; set; }
+        public CareerPlanStatus Status { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
 
-        public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
+        public bool IsDeleted { get; set; }
 
         public virtual Employee Employee { get; set; }
     }
