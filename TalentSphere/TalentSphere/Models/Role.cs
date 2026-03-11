@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TalentSphere.Enums;
 
 namespace TalentSphere.Models
 {
@@ -7,12 +8,10 @@ namespace TalentSphere.Models
     {
         public int RoleID { get; set; }
 
-        public string RoleName { get; set; }
+        public RoleName Name { get; set; }
+        public bool IsDeleted { get; set; }
+        public DateTime CreatedAt { get; set; } 
 
-        public ICollection<User> Users { get; set; }
-
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-        public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; } 
     }
 }

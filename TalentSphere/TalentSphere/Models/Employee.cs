@@ -18,10 +18,10 @@ namespace TalentSphere.Models
 
         public DateTime? JoinDate { get; set; }
         
-        public EmployeeStatus Status { get; set; } = EmployeeStatus.Active;
-        
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public EmployeeStatus Status { get; set; }
+        public bool IsDeleted { get; set;  }
+        public DateTime CreatedAt { get; set; }
 
-        public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
     }
 }

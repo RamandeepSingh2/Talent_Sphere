@@ -20,6 +20,7 @@ namespace TalentSphere.Config.Configurations
 
             builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
             builder.Property(e => e.UpdatedAt).HasDefaultValueSql("GETUTCDATE()");
+            builder.Property<bool>("IsDeleted").HasDefaultValue(false);
         }
     }
 }

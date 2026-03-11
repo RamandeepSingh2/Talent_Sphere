@@ -38,10 +38,13 @@ namespace TalentSphere.Config.Configurations
             builder.Property(u => u.UpdatedAt)
                    .HasDefaultValueSql("GETUTCDATE()");
 
-            builder.HasOne(u => u.Role)
-                   .WithMany(r => r.Users)
-                   .HasForeignKey(u => u.RoleID)
-                   .OnDelete(DeleteBehavior.Restrict);
+            // Ensure IsDeleted has a default value of false (shadow property if not present on the CLR type)
+            builder.Property<bool>("IsDeleted").HasDefaultValue(false);
+
+            //builder.HasOne(u => u.Role)
+            //       .WithMany(r => r.Users)
+            //       .HasForeignKey(u => u.RoleID)
+            //       .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
