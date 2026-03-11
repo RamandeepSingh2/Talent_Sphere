@@ -7,20 +7,21 @@ namespace TalentSphere.Models
 {
     public class Resume
         {
-            public int ResumeID { get; set; }
+        public int ResumeID { get; set; }
 
             public int CandidateID { get; set; }
 
-            public virtual User Candidate { get; set; } = null!;
+            public virtual User Candidate { get; set; }
 
-            public string FileURI { get; set; } = string.Empty;
+            public string FileURI { get; set; }
+            public DateTime UploadedDate { get; set; }
 
-            public DateTime UploadedDate { get; set; } = DateTime.UtcNow;
+            public ResumeStatus Status { get; set; } 
 
-            public ResumeStatus Status { get; set; } = ResumeStatus.Active;
+            public DateTime CreatedAt { get; set; }
 
-            public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+            public DateTime? UpdatedAt { get; set; }
 
-            public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
-        }
+            public Boolean IsDeleted { get; set; }
+    }
 }

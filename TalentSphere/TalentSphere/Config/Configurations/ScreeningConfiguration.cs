@@ -14,10 +14,14 @@ namespace TalentSphere.Config.Configurations
 
             builder.Property(s => s.Result).IsRequired();
 
+            builder.Property(s => s.Date).HasDefaultValueSql("GETUTCDATE()");
+
             builder.Property(s => s.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
             builder.Property(s => s.UpdatedAt).HasDefaultValueSql("GETUTCDATE()");
 
-            builder.HasOne(s => s.Application).WithMany().HasForeignKey(s => s.ApplicationID).OnDelete(DeleteBehavior.Cascade);
+            builder.Property<bool>("IsDeleted").HasDefaultValue(false);
+
+            builder.HasOne(s => s.Application).WithMany().HasForeignKey(s => s.ApplicationID).OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(s => s.Recruiter).WithMany().HasForeignKey(s => s.RecruiterID).OnDelete(DeleteBehavior.Restrict);
         }
     }

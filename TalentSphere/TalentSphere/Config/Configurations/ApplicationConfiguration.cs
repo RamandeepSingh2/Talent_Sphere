@@ -24,6 +24,8 @@ namespace TalentSphere.Config.Configurations
             builder.Property(a => a.UpdatedAt)
                    .HasDefaultValueSql("GETUTCDATE()");
 
+            builder.Property<bool>("IsDeleted").HasDefaultValue(false);
+
             builder.HasOne(a => a.Job).WithMany().HasForeignKey(a => a.JobID).OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(a => a.Candidate).WithMany().HasForeignKey(a => a.CandidateID).OnDelete(DeleteBehavior.Restrict);
         }

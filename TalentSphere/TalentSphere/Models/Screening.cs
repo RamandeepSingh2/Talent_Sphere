@@ -11,20 +11,22 @@ namespace TalentSphere.Models
 
         public int ApplicationID { get; set; }
 
-        public virtual Application Application { get; set; } = null!;
+        public virtual Application Application { get; set; }
 
         public int RecruiterID { get; set; }
 
-        public virtual User Recruiter { get; set; } = null!;
+        public virtual User Recruiter { get; set; }
 
-        public ScreeningResult Result { get; set; } = ScreeningResult.Fail;
+        public ScreeningResult Result { get; set; } 
 
         public string? Notes { get; set; }
 
-        public DateTime Date { get; set; } = DateTime.UtcNow;
+        public DateTime Date { get; set; } 
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
 
-        public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
+
+        public Boolean IsDeleted { get; set; }
     }
 }
