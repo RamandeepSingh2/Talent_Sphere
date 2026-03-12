@@ -11,6 +11,7 @@ namespace TalentSphere.Config.Configurations
         {
             builder.ToTable("Selections");
             builder.HasKey(s => s.SelectionID);
+            builder.Property(s => s.SelectionID).ValueGeneratedOnAdd();
 
             builder.Property(s => s.Decision).IsRequired();
 

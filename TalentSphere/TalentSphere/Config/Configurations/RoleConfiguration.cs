@@ -10,6 +10,7 @@ namespace TalentSphere.Config.Configurations
         {
             builder.ToTable("Roles");
             builder.HasKey(r => r.RoleID);
+            builder.Property(r => r.RoleID).ValueGeneratedOnAdd();
 
             builder.Property(r => r.Name).IsRequired().HasMaxLength(50);
 

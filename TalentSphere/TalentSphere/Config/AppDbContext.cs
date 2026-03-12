@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TalentSphere.Models;
-using TalentSphere.Models;
 using TalentSphere.Config.Configurations;
 
 namespace TalentSphere.Config
@@ -54,7 +53,7 @@ namespace TalentSphere.Config
         public DbSet<PerformanceReview> PerformanceReviews { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Role> Roles { get; set; }
-        public DbSet<EmployeeDoc> EmployeeDocs { get; set; }
+        public DbSet<EmployeeDocument> EmployeeDocs { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }

@@ -11,6 +11,7 @@ namespace TalentSphere.Config.Configurations
         {
             builder.ToTable("Recruitments");
             builder.HasKey(j => j.JobID);
+            builder.Property(j => j.JobID).ValueGeneratedOnAdd();
 
             builder.Property(j => j.Title).IsRequired().HasMaxLength(255);
             builder.Property(j => j.Department).IsRequired().HasMaxLength(100);

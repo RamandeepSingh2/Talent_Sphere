@@ -12,6 +12,7 @@ namespace TalentSphere.Config.Configurations
             builder.ToTable("PerformanceReviews");
             //key Mapping
             builder.HasKey(p => p.ReviewID);
+            builder.Property(p => p.ReviewID).ValueGeneratedOnAdd();
 
             builder.Property(p => p.Score)
                    .HasColumnType("decimal(5,2)")

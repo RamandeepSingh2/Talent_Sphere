@@ -10,6 +10,7 @@ namespace TalentSphere.Config.Configurations
         {
             builder.ToTable("AuditLogs");
             builder.HasKey(a => a.AuditID);
+            builder.Property(a => a.AuditID).ValueGeneratedOnAdd();
 
             builder.Property(a => a.Action).IsRequired().HasMaxLength(255);
             builder.Property(a => a.Resource).IsRequired().HasMaxLength(255);

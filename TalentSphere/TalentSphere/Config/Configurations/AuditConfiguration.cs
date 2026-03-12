@@ -11,6 +11,7 @@ namespace TalentSphere.Config.Configurations
         {
             builder.ToTable("Audits");
             builder.HasKey(a => a.AuditID);
+            builder.Property(a => a.AuditID).ValueGeneratedOnAdd();
 
             builder.Property(a => a.Scope).IsRequired().HasMaxLength(255);
             builder.Property(a => a.Findings).HasMaxLength(1000);

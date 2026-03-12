@@ -11,6 +11,7 @@ namespace TalentSphere.Config.Configurations
         {
             builder.ToTable("CareerPlans");
             builder.HasKey(c => c.PlanID);
+            builder.Property(c => c.PlanID).ValueGeneratedOnAdd();
 
             builder.Property(c => c.Goals).IsRequired();
             builder.Property(c => c.Timeline).HasMaxLength(255);

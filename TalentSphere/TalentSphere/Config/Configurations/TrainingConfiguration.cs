@@ -11,6 +11,7 @@ namespace TalentSphere.Config.Configurations
         {
             builder.ToTable("Trainings");
             builder.HasKey(t => t.TrainingID);
+            builder.Property(t => t.TrainingID).ValueGeneratedOnAdd();
 
             builder.Property(t => t.Title).IsRequired().HasMaxLength(255);
             builder.Property(t => t.Duration).IsRequired().HasMaxLength(100);
@@ -19,6 +20,7 @@ namespace TalentSphere.Config.Configurations
 
             builder.Property(t => t.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
             builder.Property(t => t.UpdatedAt).HasDefaultValueSql("GETUTCDATE()");
+            builder.Property<bool>("IsDeleted").HasDefaultValue(false);
         }
     }
 }

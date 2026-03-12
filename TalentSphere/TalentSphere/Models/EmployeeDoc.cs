@@ -20,9 +20,11 @@ namespace TalentSphere.Models
         public EmployeeDocVerifyStatus VerifyStatus { get; set; } 
 
         public Employee Employee { get; set; }
-        public bool IsDeleted { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public DateTime CreatedAt { get; set; }
 
         public DateTime? UpdatedAt { get; set; }
+        
+        public bool IsDeleted { get; set; }
     }
 }

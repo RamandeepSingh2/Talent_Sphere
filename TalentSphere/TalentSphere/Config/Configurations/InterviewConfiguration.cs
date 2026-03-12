@@ -11,6 +11,7 @@ namespace TalentSphere.Config.Configurations
         {
             builder.ToTable("Interviews");
             builder.HasKey(i => i.InterviewID);
+            builder.Property(i => i.InterviewID).ValueGeneratedOnAdd();
 
             builder.Property(i => i.Date).IsRequired();
             builder.Property(i => i.Time).IsRequired();

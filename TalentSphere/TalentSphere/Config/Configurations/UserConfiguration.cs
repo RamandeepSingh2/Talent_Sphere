@@ -2,6 +2,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TalentSphere.Models;
+using TalentSphere.Enums;
 
 namespace TalentSphere.Config.Configurations
 {
@@ -12,6 +13,7 @@ namespace TalentSphere.Config.Configurations
             builder.ToTable("Users");
 
             builder.HasKey(u => u.UserID);
+            builder.Property(u => u.UserID).ValueGeneratedOnAdd();
 
             builder.Property(u => u.Name)
                    .IsRequired()
@@ -20,11 +22,11 @@ namespace TalentSphere.Config.Configurations
             builder.Property(u => u.Email)
                    .IsRequired()
                    .HasMaxLength(255);
-              
-            builder.Property(u => u.Password)
+
+            builder.Property(u => u.PasswordHash)
                    .IsRequired()
                    .HasMaxLength(255);
-            
+
 
             builder.HasIndex(u => u.Email).IsUnique();
 
@@ -33,9 +35,10 @@ namespace TalentSphere.Config.Configurations
 
             builder.HasIndex(u => u.Phone).IsUnique();
 
-            builder.Property(u => u.Status)
-                   .HasMaxLength(50)
-                   .HasDefaultValue("Active");
+            builder.Property(u => u.Status).
+                    HasConversion<string>()
+                   .HasDefaultValue(UserStatus.Active)
+                   .IsRequired();
 
             builder.Property(u => u.CreatedAt)
                    .HasDefaultValueSql("GETUTCDATE()");
@@ -46,10 +49,6 @@ namespace TalentSphere.Config.Configurations
             // Ensure IsDeleted has a default value of false (shadow property if not present on the CLR type)
             builder.Property<bool>("IsDeleted").HasDefaultValue(false);
 
-            //builder.HasOne(u => u.Role)
-            //       .WithMany(r => r.Users)
-            //       .HasForeignKey(u => u.RoleID)
-            //       .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

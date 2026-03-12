@@ -10,10 +10,12 @@ namespace TalentSphere.Config.Configurations
         {
             builder.ToTable("UserRoles");
 
-            builder.HasKey(ur => new { ur.UserId, ur.RoleId });
+            builder.HasKey(ur => ur.UserRoleId);
+            builder.Property(ur=>ur.UserRoleId).ValueGeneratedOnAdd();
 
             builder.Property(ur => ur.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
             builder.Property(ur => ur.UpdatedAt).HasDefaultValueSql("GETUTCDATE()");
+            builder.Property<bool>("IsDeleted").HasDefaultValue(false);
 
             builder.HasOne(ur => ur.User).WithMany().HasForeignKey(ur => ur.UserId).OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(ur => ur.Role).WithMany().HasForeignKey(ur => ur.RoleId).OnDelete(DeleteBehavior.Restrict);

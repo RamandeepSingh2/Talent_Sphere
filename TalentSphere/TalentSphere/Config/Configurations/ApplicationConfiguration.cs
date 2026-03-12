@@ -11,6 +11,7 @@ namespace TalentSphere.Config.Configurations
         {
             builder.ToTable("Application");
             builder.HasKey(a => a.ApplicationID);
+            builder.Property(a => a.ApplicationID).ValueGeneratedOnAdd();
 
             builder.Property(a => a.SubmittedDate).IsRequired();
 

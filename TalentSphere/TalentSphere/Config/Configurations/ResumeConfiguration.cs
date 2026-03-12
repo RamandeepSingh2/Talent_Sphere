@@ -11,6 +11,7 @@ namespace TalentSphere.Config.Configurations
         {
             builder.ToTable("Resume");
             builder.HasKey(r => r.ResumeID);
+            builder.Property(r => r.ResumeID).ValueGeneratedOnAdd();
 
             builder.Property(r => r.FileURI).IsRequired().HasMaxLength(500);
 

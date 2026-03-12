@@ -11,6 +11,7 @@ namespace TalentSphere.Config.Configurations
         {
             builder.ToTable("Screenings");
             builder.HasKey(s => s.ScreeningID);
+            builder.Property(s => s.ScreeningID).ValueGeneratedOnAdd();
 
             builder.Property(s => s.Result).IsRequired();
 

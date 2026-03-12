@@ -10,6 +10,7 @@ namespace TalentSphere.Config.Configurations
         {
             builder.ToTable("ComplianceRecords");
             builder.HasKey(c => c.ComplianceID);
+            builder.Property(c => c.ComplianceID).ValueGeneratedOnAdd();
 
             builder.Property(c => c.Type).IsRequired();
             builder.Property(c => c.Date).IsRequired();

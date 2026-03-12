@@ -11,6 +11,7 @@ namespace TalentSphere.Config.Configurations
         {
             builder.ToTable("Employees");
             builder.HasKey(e => e.EmployeeID);
+            builder.Property(e => e.EmployeeID).ValueGeneratedOnAdd();
 
             builder.Property(e => e.Name).IsRequired().HasMaxLength(255);
             builder.Property(e => e.Department).HasMaxLength(100);

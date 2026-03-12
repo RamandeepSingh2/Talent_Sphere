@@ -8,9 +8,11 @@ namespace TalentSphere.Models
 		public int EnrollmentID { get; set; }
 
 		public int TrainingID { get; set; }
+		
 		public virtual Training Training { get; set; }
 
 		public int EmployeeID { get; set; }
+
 		public virtual Employee Employee { get; set; }
 
 		public DateOnly Date { get; set; }
@@ -20,6 +22,7 @@ namespace TalentSphere.Models
 		public DateTime CreatedAt { get; set; }
 
 		public DateTime? UpdatedAt { get; set; }
+
 		public bool IsDeleted { get; set; }
 
 	}

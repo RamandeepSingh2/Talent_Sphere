@@ -11,6 +11,7 @@ namespace TalentSphere.Config.Configurations
         {
             builder.ToTable("EmployeeDocs");
             builder.HasKey(d => d.DocumentID);
+            builder.Property(d => d.DocumentID).ValueGeneratedOnAdd();
 
             // Store DocType enum as string in DB
             builder.Property(d => d.DocType)
@@ -18,10 +19,9 @@ namespace TalentSphere.Config.Configurations
                 .HasMaxLength(100);
             builder.Property(d => d.FileURI).HasMaxLength(500);
             // Map VerifyStatus enum to string in the DB, keep max length and default
-            builder.Property(d => d.VerifyStatus)
+            builder.Property(e => e.VerifyStatus)
                 .HasConversion<string>()
-                .HasMaxLength(50)
-                .HasDefaultValue(EmployeeDocVerifyStatus.Pending.ToString());
+                .HasDefaultValue(EmployeeDocVerifyStatus.Pending);
 
             builder.Property(d => d.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
             builder.Property(d => d.UpdatedAt).HasDefaultValueSql("GETUTCDATE()");

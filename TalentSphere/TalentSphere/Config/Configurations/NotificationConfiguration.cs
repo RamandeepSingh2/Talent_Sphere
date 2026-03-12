@@ -11,6 +11,7 @@ namespace TalentSphere.Config.Configurations
         {
             builder.ToTable("Notifications");
             builder.HasKey(n => n.NotificationID);
+            builder.Property(n => n.NotificationID).ValueGeneratedOnAdd();
 
             builder.Property(n => n.Message).IsRequired().HasMaxLength(1000);
             builder.Property(n => n.Category)
