@@ -7,6 +7,7 @@ namespace TalentSphere.Repositories.Interfaces
     {
         Task<Screening> AddAsync(Screening screening);
         Task<Screening> GetByIdAsync(int id);
+        Task<IEnumerable<Screening>> GetAllAsync();
         Task SaveChangesAsync();
     }
 }

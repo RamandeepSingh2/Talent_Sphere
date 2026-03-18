@@ -31,5 +31,13 @@ namespace TalentSphere.Repositories
         {
             await _context.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<Screening>> GetAllAsync()
+        {
+            return await _context.Set<Screening>()
+                .AsNoTracking()
+                .Where(s => !s.IsDeleted)
+                .ToListAsync();
+        }
     }
 }

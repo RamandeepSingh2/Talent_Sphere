@@ -98,13 +98,38 @@ namespace TalentSphere.Mappers
             CreateMap<CreateApplicationDTO, Application>()
                 .ReverseMap();
 
+            // Application -> Response DTO
+            CreateMap<Application, ApplicationResponseDTO>()
+                .ReverseMap();
+            // UpdateApplicationDTO -> Application (skip nulls)
+            var updateApplicationMap = CreateMap<UpdateApplicationDTO, Application>();
+            updateApplicationMap.ForAllMembers(opt => opt.Condition((src, dest, srcMember, context) =>
+                srcMember != null && (!(srcMember is string) || !string.IsNullOrWhiteSpace((string)srcMember))
+            ));
+
             //Resume mappings
             CreateMap<CreateResumeDTO, Resume>()
                 .ReverseMap();
+            // Resume -> Response DTO
+            CreateMap<Resume, ResumeResponseDTO>()
+                .ReverseMap();
+            // UpdateResumeDTO -> Resume (skip nulls)
+            var updateResumeMap = CreateMap<UpdateResumeDTO, Resume>();
+            updateResumeMap.ForAllMembers(opt => opt.Condition((src, dest, srcMember, context) =>
+                srcMember != null && (!(srcMember is string) || !string.IsNullOrWhiteSpace((string)srcMember))
+            ));
 
             //Screening mappings
             CreateMap<CreateScreeningDTO, Screening>()
                 .ReverseMap();
+            // Screening -> Response DTO
+            CreateMap<Screening, ScreeningResponseDTO>()
+                .ReverseMap();
+            // UpdateScreeningDTO -> Screening (skip nulls)
+            var updateScreeningMap = CreateMap<UpdateScreeningDTO, Screening>();
+            updateScreeningMap.ForAllMembers(opt => opt.Condition((src, dest, srcMember, context) =>
+                srcMember != null && (!(srcMember is string) || !string.IsNullOrWhiteSpace((string)srcMember))
+            ));
             //Report mappings
             CreateMap<CreateReportDTO, Report>()
                 .ReverseMap();

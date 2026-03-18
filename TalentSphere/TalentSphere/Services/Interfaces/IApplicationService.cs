@@ -6,7 +6,10 @@ namespace TalentSphere.Services.Interfaces
 {
     public interface IApplicationService
     {
-        Task<Application> CreateApplicationAsync(CreateApplicationDTO dto);
-        Task<Application> GetByIdAsync(int id);
+        Task<ApplicationResponseDTO> CreateApplicationAsync(CreateApplicationDTO dto);
+        Task<ApplicationResponseDTO> GetByIdAsync(int id);
+        Task<ApplicationResponseDTO> UpdateApplicationAsync(int id, UpdateApplicationDTO dto);
+        Task<IEnumerable<ApplicationResponseDTO>> GetAllAsync();
+        Task<bool> DeleteApplicationAsync(int id);
     }
 }

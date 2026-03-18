@@ -33,7 +33,7 @@ namespace TalentSphere.Controllers
         /// resource. Returns a 400 Bad Request response if the input data is invalid.</returns>
 
         [HttpPost]
-        [ProducesResponseType(typeof(Screening), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ScreeningResponseDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Create([FromBody] CreateScreeningDTO dto)
@@ -56,8 +56,25 @@ namespace TalentSphere.Controllers
             }
         }
 
+        /// <summary>
+        /// Retrieves all screenings.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                var screenings = await _screeningService.GetAllAsync();
+                return Ok(new { message = "Screenings retrieved successfully.", data = screenings });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while fetching screenings.", Error = ex.Message });
+            }
+        }
+
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(Screening), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ScreeningResponseDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetById(int id)
@@ -74,6 +91,59 @@ namespace TalentSphere.Controllers
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while retrieving the screening.", error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Update an existing screening
+        /// </summary>
+        [HttpPut("{id}")]
+        [ProducesResponseType(typeof(ScreeningResponseDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateScreeningDTO dto)
+        {
+            try
+            {
+                if (dto == null)
+                    return BadRequest(new { message = "Request body is required." });
+
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                var updated = await _screeningService.UpdateScreeningAsync(id, dto);
+                if (updated == null)
+                    return NotFound(new { message = $"Screening with ID {id} not found." });
+
+                return Ok(new { message = "Screening updated successfully.", data = updated });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while updating the screening.", Error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Delete (soft delete) a screening
+        /// </summary>
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var deleted = await _screeningService.DeleteScreeningAsync(id);
+                if (!deleted)
+                    return NotFound(new { message = $"Screening with ID {id} not found." });
+
+                return Ok(new { message = "Screening deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while deleting the screening.", Error = ex.Message });
             }
         }
     }

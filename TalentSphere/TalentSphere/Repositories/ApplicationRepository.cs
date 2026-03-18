@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using TalentSphere.Config;
 using TalentSphere.Models;
 using TalentSphere.Repositories.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TalentSphere.Repositories
 {
@@ -30,6 +32,14 @@ namespace TalentSphere.Repositories
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Application>> GetAllAsync()
+        {
+            return await _context.Set<Application>()
+                .AsNoTracking()
+                .Where(a => !a.IsDeleted)
+                .ToListAsync();
         }
     }
 }

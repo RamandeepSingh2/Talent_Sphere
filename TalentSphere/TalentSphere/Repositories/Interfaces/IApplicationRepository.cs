@@ -7,6 +7,7 @@ namespace TalentSphere.Repositories.Interfaces
     {
         Task<Application> AddAsync(Application application);
         Task<Application> GetByIdAsync(int id);
+        Task<IEnumerable<Application>> GetAllAsync();
         Task SaveChangesAsync();
     }
 }

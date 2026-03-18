@@ -7,6 +7,7 @@ namespace TalentSphere.Repositories.Interfaces
     {
         Task<Resume> AddAsync(Resume resume);
         Task<Resume> GetByIdAsync(int id);
+        Task<IEnumerable<Resume>> GetAllAsync();
         Task SaveChangesAsync();
     }
 }
