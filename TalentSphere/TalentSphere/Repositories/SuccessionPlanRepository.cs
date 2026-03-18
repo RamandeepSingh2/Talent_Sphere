@@ -22,7 +22,18 @@ namespace TalentSphere.Repositories
 			return await _context.
 				Set<SuccessionPlan>().FirstOrDefaultAsync(sp => sp.SuccessionID == id && !sp.IsDeleted);
 		}
-
+		public async Task<List<SuccessionPlan>> GetAllAsync()
+		{
+			return await _context.SuccessionPlans.ToListAsync();
+		}
+		public async Task UpdateAsync(SuccessionPlan plan){
+			_context.SuccessionPlans.Update(plan);
+			await _context.SaveChangesAsync();
+		}
+		public async Task DeleteAsync(SuccessionPlan plan){
+			_context.SuccessionPlans.Remove(plan);
+			await _context.SaveChangesAsync();
+		}
 		public async Task SaveChangesAsync()
 		{
 			await _context.SaveChangesAsync();

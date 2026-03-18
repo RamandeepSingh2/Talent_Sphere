@@ -30,5 +30,13 @@ namespace TalentSphere.Repositories
 		{
 			await _context.SaveChangesAsync();
 		}
+		public async Task<List<Report>> GetAllAsync()
+		{
+			return await _context.Reports.ToListAsync();
+		}
+		public async Task DeleteAsync(Report report)
+		{
+			_context.Reports.Remove(report);
+		}
 	}
 }

@@ -28,5 +28,14 @@ namespace TalentSphere.Repositories
 		{
 			await _context.SaveChangesAsync();
 		}
+
+		public async Task<List<Training>> GetAllAsync()
+		{
+			return await _context.Trainings.ToListAsync();
+		}
+		public async Task DeleteAsync(Training training)
+		{
+			_context.Trainings.Remove(training);
+		}
 	}
 }

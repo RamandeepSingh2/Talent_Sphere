@@ -31,5 +31,35 @@ namespace TalentSphere.Services
 		{
 			return await _repository.GetByIdAsync(id);
 		}
+		public async Task<List<Report>> GetAllAsync()
+		{
+			return await _repository.GetAllAsync();
+		}
+		public async Task<Report> UpdateAsync(int id, UpdateReportDTO dto)
+		{
+			var report = await _repository.GetByIdAsync(id);
+			if (report == null){
+				return null;
+			}
+			report.Scope = dto.Scope;
+			report.Metrics = dto.Metrics;
+			report.GenerateDate = dto.GenerateDate;
+
+			await _repository.SaveChangesAsync();
+			return report;
+		}
+		public async Task<bool> DeleteAsync(int id)
+		{
+			var report = await _repository.GetByIdAsync(id);
+			if (report == null)
+			{
+				return false;
+			}
+			await _repository.DeleteAsync(report);
+			await _repository.SaveChangesAsync();
+			return true;
+
+		}
+
 	}
 }

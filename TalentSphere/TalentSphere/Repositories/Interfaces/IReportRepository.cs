@@ -6,7 +6,8 @@ namespace TalentSphere.Repositories.Interfaces
 	{
 		Task<Report> AddAsync(Report report);
 		Task<Report> GetByIdAsync(int id);
-
+		Task<List<Report>> GetAllAsync();
+		Task DeleteAsync(Report report);
 		Task SaveChangesAsync();
 
 	}

@@ -32,5 +32,32 @@ namespace TalentSphere.Services
 			return await _repository.GetByIdAsync(id);
 
 		}
+		public async Task<List<Training>> GetAllAsync()
+		{
+			return await _repository.GetAllAsync();
+		}
+		public async Task<Training> UpdateAsync(int id, UpdateTrainingDTO dto){
+			var training = await _repository.GetByIdAsync(id);
+			if(training == null){
+				return null;
+			}
+			training.Title = dto.Title;
+			training.Description = dto.Description;
+			training.Duration = dto.Duration;
+
+			await _repository.SaveChangesAsync();
+
+			return training;
+		}
+		public async Task<bool> DeleteAsync(int id){
+			var training = await _repository.GetByIdAsync(id);
+			if (training == null)
+			{
+				return false;
+			}
+			await _repository.DeleteAsync(training);
+			await _repository.SaveChangesAsync();
+			return true;
+		}
 	}
 }

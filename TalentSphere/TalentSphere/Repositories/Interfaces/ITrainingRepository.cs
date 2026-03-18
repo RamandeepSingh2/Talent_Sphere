@@ -9,5 +9,8 @@ namespace TalentSphere.Repositories.Interfaces
 
 		Task SaveChangesAsync();
 
+		Task<List<Training>> GetAllAsync();
+		Task DeleteAsync(Training training);
+
 	}
 }

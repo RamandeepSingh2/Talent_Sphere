@@ -6,6 +6,9 @@ namespace TalentSphere.Repositories.Interfaces
 	{
 		Task<SuccessionPlan> AddAsync(SuccessionPlan successionPlan);
 		Task<SuccessionPlan> GetByIdAsync(int id);
+		Task<List<SuccessionPlan>> GetAllAsync();
+		Task UpdateAsync(SuccessionPlan succession);
+		Task DeleteAsync(SuccessionPlan succession);
 		Task SaveChangesAsync();
 	}
 }

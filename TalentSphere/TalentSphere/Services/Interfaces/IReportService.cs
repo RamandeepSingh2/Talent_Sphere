@@ -7,5 +7,8 @@ namespace TalentSphere.Services.Interfaces
 	{
 		Task<Report> CreateReportAsync(CreateReportDTO dto);
 		Task<Report> GetByIdAsync(int id);
+		Task <List<Report>> GetAllAsync();
+		Task<Report> UpdateAsync(int id, UpdateReportDTO dto);
+		Task<bool> DeleteAsync(int id);
 	}
 }
