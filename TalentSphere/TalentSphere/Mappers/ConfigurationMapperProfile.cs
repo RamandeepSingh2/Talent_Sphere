@@ -1,6 +1,11 @@
 ﻿using AutoMapper;
-using TalentSphere.Models;
+
 using TalentSphere.DTOs;
+using TalentSphere.DTOs.PerformanceReview;
+using TalentSphere.DTOs.CareerPlan;
+using TalentSphere.DTOs.Notification;
+using TalentSphere.Enums;
+using TalentSphere.Models;
 using TalentSphere.Utils;
 
 namespace TalentSphere.Mappers
@@ -43,6 +48,47 @@ namespace TalentSphere.Mappers
             CreateMap<CreateSelectionDTO, Selection>()
                 .ReverseMap();
 
+
+            //PerformanceReview Mapping
+            // PerformanceReview Mapping Cfor Create
+            CreateMap<CreatePerformanceReviewDTO, PerformanceReview>();
+
+            //Performancereview Mapping for Update 
+            CreateMap<UpdatePerformanceReviewDTO, PerformanceReview>()
+             .ForMember(dest => dest.ReviewID, opt => opt.Ignore())
+             .ForMember(dest => dest.EmployeeID, opt => opt.Ignore())
+             .ForMember(dest => dest.ManagerID, opt => opt.Ignore())
+             .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+             .ForMember(dest => dest.IsDeleted, opt => opt.Ignore());
+
+            // PerformanceReview Mapping for Read
+            CreateMap<PerformanceReview, PerformanceReviewDTO>();
+            CreateMap<PerformanceReview, PerformanceReviewListDTO>();
+
+            //Notification Mapping
+            CreateMap<CreateNotificationDTO, Notification>()
+                .ForMember(d => d.IsDeleted, opt => opt.MapFrom(s => false));
+
+            CreateMap<Notification, NotificationResponseDTO>()
+                .ForMember(d => d.Category, opt => opt.MapFrom(s => s.Category.ToString()))
+                .ForMember(d => d.Status, opt => opt.MapFrom(s => s.Status.ToString()));
+            // CareerPlan Mapping Configuration
+            CreateMap<CreateCareerPlanDTO, CareerPlan>();
+            CreateMap<UpdateCareerPlanDTO, CareerPlan>();
+
+            CreateMap<CareerPlan, CareerPlanResponseDTO>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
+                .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.Employee.Name));
+
+            // Notification Mapping Configuration
+            //CreateMap<CreateNotificationDTO, Notification>()
+            //    .ForMember(dest => dest.NotificationID, opt => opt.Ignore())
+            //    .ForMember(dest => dest.Status, opt => opt.Ignore())      
+            //    .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())   
+            //    .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())   
+            //    .ForMember(dest => dest.IsDeleted, opt => opt.Ignore())   
+            //    .ForMember(dest => dest.User, opt => opt.Ignore())
+            //    .ReverseMap();
             // User mappings
             CreateMap<CreateUserDTO, User>()
                 .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => PasswordHasher.Hash(src.PasswordHash)));

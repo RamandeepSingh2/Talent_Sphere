@@ -1,11 +1,12 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using TalentSphere.Config;
+using TalentSphere.Repositories;
+using TalentSphere.Services.Interfaces;
 using TalentSphere.Repositories.Interfaces;
 using TalentSphere.Mappers;
 using TalentSphere.Repositories;
 using TalentSphere.Services;
-using TalentSphere.Services.Interfaces;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,7 +31,6 @@ builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<IInterviewRepository, InterviewRepository>();
 builder.Services.AddScoped<IInterviewService, InterviewService>();
 builder.Services.AddScoped<ISelectionRepository, SelectionRepository>();
-builder.Services.AddScoped<ISelectionService, SelectionService>();
 // Register User repository and service
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -53,6 +53,18 @@ builder.Services.AddScoped<IUserRoleService, UserRoleService>();
 builder.Services.AddScoped<IComplianceRecordRepository, ComplianceRecordRepository>();
 builder.Services.AddScoped<IComplianceRecordService, ComplianceRecordService>();
 builder.Services.AddScoped<IAuditRepository, AuditRepository>();
+builder.Services.AddScoped<IAuditService, AuditService>();
+
+// Performance Review
+builder.Services.AddScoped<IPerformanceReviewRepository, PerformanceReviewRepository>();
+builder.Services.AddScoped<IPerformanceReviewService, PerformanceReviewService>();
+// Career Plan
+builder.Services.AddScoped<ICareerPlanRepository, CareerPlanRepository>();
+builder.Services.AddScoped<ICareerPlanService, CareerPlanService>();
+// Notification
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
 builder.Services.AddScoped<IAuditService, AuditService>();
 
 //Register report repository

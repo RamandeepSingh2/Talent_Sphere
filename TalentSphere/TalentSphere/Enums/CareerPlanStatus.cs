@@ -6,6 +6,6 @@ namespace TalentSphere.Enums
         Active = 2,
         InProgress = 3,
         Completed = 4,
-        Archived = 5
+       
     }
 }

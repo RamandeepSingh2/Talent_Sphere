@@ -27,7 +27,7 @@ namespace TalentSphere.Config.Configurations
             // Timestamps
             builder.Property(p => p.CreatedAt)
                    .HasDefaultValueSql("GETUTCDATE()")
-                   .ValueGeneratedOnAdd();
+            .ValueGeneratedOnAdd();
 
             builder.Property(p => p.UpdatedAt)
                    .HasDefaultValueSql("GETUTCDATE()")
