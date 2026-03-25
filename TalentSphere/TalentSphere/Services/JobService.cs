@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using AutoMapper;
 using TalentSphere.DTOs;
 using TalentSphere.Enums;
@@ -40,6 +41,36 @@ namespace TalentSphere.Services
         public async Task<Job> GetByIdAsync(int id)
         {
             return await _repository.GetByIdAsync(id);
+        }
+
+        public async Task<List<Job>> GetAllJobsAsync()
+        {
+            return await _repository.GetAllAsync();
+        }
+
+        public async Task<Job> UpdateJobAsync(int id, UpdateJobDTO dto)
+        {
+            var job = await _repository.GetByIdAsync(id);
+            if (job == null)
+                return null;
+
+            _mapper.Map(dto, job);
+            job.UpdatedAt = DateTime.UtcNow;
+
+            await _repository.UpdateAsync(job);
+            await _repository.SaveChangesAsync();
+            return job;
+        }
+
+        public async Task<bool> DeleteJobAsync(int id)
+        {
+            var job = await _repository.GetByIdAsync(id);
+            if (job == null)
+                return false;
+
+            await _repository.DeleteAsync(job);
+            await _repository.SaveChangesAsync();
+            return true;
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using AutoMapper;
 using TalentSphere.DTOs;
 using TalentSphere.Models;
@@ -32,6 +33,36 @@ namespace TalentSphere.Services
         public async Task<Selection> GetByIdAsync(int id)
         {
             return await _repository.GetByIdAsync(id);
+        }
+
+        public async Task<List<Selection>> GetAllSelectionsAsync()
+        {
+            return await _repository.GetAllAsync();
+        }
+
+        public async Task<Selection> UpdateSelectionAsync(int id, UpdateSelectionDTO dto)
+        {
+            var selection = await _repository.GetByIdAsync(id);
+            if (selection == null)
+                return null;
+
+            _mapper.Map(dto, selection);
+            selection.UpdatedAt = DateTime.UtcNow;
+
+            await _repository.UpdateAsync(selection);
+            await _repository.SaveChangesAsync();
+            return selection;
+        }
+
+        public async Task<bool> DeleteSelectionAsync(int id)
+        {
+            var selection = await _repository.GetByIdAsync(id);
+            if (selection == null)
+                return false;
+
+            await _repository.DeleteAsync(selection);
+            await _repository.SaveChangesAsync();
+            return true;
         }
     }
 }

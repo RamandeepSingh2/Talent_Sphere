@@ -1,4 +1,6 @@
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using TalentSphere.Config;
 using TalentSphere.Models;
@@ -23,7 +25,24 @@ namespace TalentSphere.Repositories
 
         public async Task<Job> GetByIdAsync(int id)
         {
-            return await _context.Jobs.FirstOrDefaultAsync(j => j.JobID == id && !EF.Property<bool>(j, "IsDeleted"));
+            return await _context.Jobs.FirstOrDefaultAsync(j => j.JobID == id && !EF.Property<bool>(j, "IsDeleted")) ?? null!;
+        }
+
+        public async Task<List<Job>> GetAllAsync()
+        {
+            return await _context.Jobs.Where(j => !EF.Property<bool>(j, "IsDeleted")).ToListAsync();
+        }
+
+        public async Task UpdateAsync(Job job)
+        {
+            _context.Jobs.Update(job);
+            await Task.CompletedTask;
+        }
+
+        public async Task DeleteAsync(Job job)
+        {
+            _context.Jobs.Remove(job);
+            await Task.CompletedTask;
         }
 
         public async Task SaveChangesAsync()
