@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using TalentSphere.DTOs;
 using TalentSphere.Models;
+using TalentSphere.Services;
 using TalentSphere.Services.Interfaces;
 using TalentSphere.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -15,11 +16,13 @@ namespace TalentSphere.Controllers
     {
         private readonly IEmployeeService _employeeService;
         private readonly IMapper _mapper;
+        private readonly AuditLogHelper _auditLogHelper;
 
-        public EmployeesController(IEmployeeService employeeService, IMapper mapper)
+        public EmployeesController(IEmployeeService employeeService, IMapper mapper, AuditLogHelper auditLogHelper)
         {
             _employeeService = employeeService;
             _mapper = mapper;
+            _auditLogHelper = auditLogHelper;
         }
 
         [Authorize(Roles = "Admin, HR")]
@@ -92,6 +95,13 @@ namespace TalentSphere.Controllers
                     return BadRequest(ModelState);
 
                 var employee = await _employeeService.CreateEmployeeAsync(dto);
+
+                // Audit log: who created this employee
+                var userId = _auditLogHelper.ExtractUserIdFromContext(HttpContext);
+                if (userId.HasValue)
+                {
+                    await _auditLogHelper.LogActionAsync(userId.Value, "Create", "Employee", $"Employee created with ID {employee.EmployeeID}");
+                }
 
                 return CreatedAtAction(nameof(GetById), new { id = employee.EmployeeID }, employee);
             }
