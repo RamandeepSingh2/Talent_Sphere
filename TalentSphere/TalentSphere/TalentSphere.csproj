@@ -11,17 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Interface\**" />
-    <Content Remove="Interface\**" />
-    <EmbeddedResource Remove="Interface\**" />
-    <None Remove="Interface\**" />
-    <Compile Remove="Profiles\**" />
-    <Content Remove="Interface\**" />
-    <Content Remove="Profiles\**" />
-    <EmbeddedResource Remove="Interface\**" />
-    <EmbeddedResource Remove="Profiles\**" />
-    <None Remove="Interface\**" />
-    <None Remove="Profiles\**" />
+   
   </ItemGroup>
 
   <ItemGroup>
@@ -40,12 +30,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Profiles\" />
-    <Folder Include="Interface\" />
-    <Folder Include="Utils\" />
   </ItemGroup>
 
 </Project>

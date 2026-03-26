@@ -1,8 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using System.Threading.Tasks;
 using TalentSphere.DTOs;
 using TalentSphere.Enums;
 using TalentSphere.Models;
@@ -21,8 +19,9 @@ namespace TalentSphere.Controllers
         private readonly IUserRoleService _userRoleService;
         private readonly IUserRoleRepository _userRoleRepository;
         private readonly TokenService _tokenService;
+        private readonly AuditLogHelper _auditLogHelper;
 
-        public UsersController(IUserService userService, IMapper mapper, IRoleRepository roleRepository, IUserRoleService userRoleService, IUserRoleRepository userRoleRepository, TokenService tokenService)
+        public UsersController(IUserService userService, IMapper mapper, IRoleRepository roleRepository, IUserRoleService userRoleService, IUserRoleRepository userRoleRepository, TokenService tokenService, AuditLogHelper auditLogHelper)
         {
             _userService = userService;
             _mapper = mapper;
@@ -30,6 +29,7 @@ namespace TalentSphere.Controllers
             _userRoleService = userRoleService;
             _userRoleRepository = userRoleRepository;
             _tokenService = tokenService;
+            _auditLogHelper = auditLogHelper;
         }
 
         /// <summary>
@@ -99,6 +99,8 @@ namespace TalentSphere.Controllers
 
                 await _userRoleService.CreateUserRoleAsync(userRoleDto);
 
+                await _auditLogHelper.LogActionAsync(userCreate.UserID, "Register", "User", $"User registered with email {dto.Email} and role Candidate");
+
                 return Ok(new { message = "User registered successfully as Candidate.", data = userCreate });
             }
             catch (InvalidOperationException ex)
@@ -158,6 +160,8 @@ namespace TalentSphere.Controllers
                     CreatedAt = user.CreatedAt
                 };
 
+                await _auditLogHelper.LogActionAsync(user.UserID, "Login", "User", $"User {user.Name} ({user.Email}) logged in successfully");
+
                 return Ok(new { message = "Login successful.", data = loginResponse });
             }
             catch (InvalidOperationException ex)
@@ -209,6 +213,13 @@ namespace TalentSphere.Controllers
                 if (updated == null)
                     return NotFound(new { message = $"User with ID {id} not found." });
 
+               
+                var userId = _auditLogHelper.ExtractUserIdFromContext(HttpContext);
+                if (userId.HasValue)
+                {
+                    await _auditLogHelper.LogActionAsync(userId.Value, "Update", "User", $"User {id} profile updated");
+                }
+
                 return Ok(new { message = "User updated successfully.", data = updated });
             }
             catch (System.Exception ex)
@@ -229,6 +240,12 @@ namespace TalentSphere.Controllers
                 var deleted = await _userService.DeleteUserAsync(id);
                 if (!deleted)
                     return NotFound(new { message = $"User with ID {id} not found." });
+
+                var userId = _auditLogHelper.ExtractUserIdFromContext(HttpContext);
+                if (userId.HasValue)
+                {
+                    await _auditLogHelper.LogActionAsync(userId.Value, "Delete", "User", $"User {id} deleted (soft delete)");
+                }
 
                 return Ok(new { message = "User deleted successfully." });
             }

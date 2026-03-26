@@ -52,6 +52,9 @@ builder.Services.AddScoped<IEmployeeDocumentService, EmployeeDocumentService>();
 builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
 builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 
+// Register AuditLogHelper for simplified audit logging
+builder.Services.AddScoped<AuditLogHelper>();
+
 // Register UserRole repository and service
 builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 builder.Services.AddScoped<IUserRoleService, UserRoleService>();
