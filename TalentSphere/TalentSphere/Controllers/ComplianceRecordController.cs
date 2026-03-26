@@ -1,18 +1,23 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TalentSphere.DTOs;
+using TalentSphere.Services;
 using TalentSphere.Services.Interfaces;
 
 namespace TalentSphere.Controllers
 {
+    [Authorize(Roles ="Admin, HR")]
     [ApiController]
     [Route("api/compliances")]
     public class ComplianceRecordController : ControllerBase
     {
         private readonly IComplianceRecordService _complianceRecordService;
+        private readonly AuditLogHelper _auditLogHelper;
 
-        public ComplianceRecordController(IComplianceRecordService complianceRecordService)
+        public ComplianceRecordController(IComplianceRecordService complianceRecordService, AuditLogHelper auditLogHelper)
         {
             _complianceRecordService = complianceRecordService;
+            _auditLogHelper = auditLogHelper;
         }
 
 
@@ -40,28 +45,34 @@ namespace TalentSphere.Controllers
                     return BadRequest(ModelState);
                 }
 
-                
+
                 var createdRecord = await _complianceRecordService.CreateComplianceRecordAsync(recordDto);
 
-                
+
                 if (createdRecord == null)
                 {
                     return Conflict("A compliance record with similar details already exists or could not be created.");
                 }
 
-                
+                // Log audit trail - extract UserID from token since endpoint is [Authorize]
+                var userId = _auditLogHelper.ExtractUserIdFromContext(HttpContext);
+                if (userId.HasValue)
+                {
+                    await _auditLogHelper.LogActionAsync(userId.Value, "Create", "ComplianceRecord", $"Compliance record created");
+                }
+
                 return CreatedAtAction(
                     nameof(CreateComplianceRecord),
                     createdRecord);
             }
             catch (ArgumentException ex)
             {
-                
+
                 return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
-                
+
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
@@ -133,6 +144,12 @@ namespace TalentSphere.Controllers
                 if (updated == null)
                     return NotFound($"Compliance record with ID {id} not found.");
 
+                // Log audit trail - extract UserID from token since endpoint is [Authorize]
+                var userId = _auditLogHelper.ExtractUserIdFromContext(HttpContext);
+                if (userId.HasValue)
+                {
+                    await _auditLogHelper.LogActionAsync(userId.Value, "Update", "ComplianceRecord", $"Compliance record {id} updated");
+                }
 
                 return Ok(updated);
             }
@@ -158,6 +175,14 @@ namespace TalentSphere.Controllers
                 var deleted = await _complianceRecordService.DeleteComplianceRecordAsync(id);
                 if (!deleted)
                     return NotFound($"Compliance record with ID {id} not found.");
+
+                // Log audit trail - extract UserID from token since endpoint is [Authorize]
+                var userId = _auditLogHelper.ExtractUserIdFromContext(HttpContext);
+                if (userId.HasValue)
+                {
+                    await _auditLogHelper.LogActionAsync(userId.Value, "Delete", "ComplianceRecord", $"Compliance record {id} deleted (soft delete)");
+                }
+
                 return NoContent();
             }
             catch (Exception ex)

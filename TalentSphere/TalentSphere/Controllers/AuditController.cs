@@ -2,20 +2,23 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TalentSphere.DTOs;
 using TalentSphere.Models;
+using TalentSphere.Services;
 using TalentSphere.Services.Interfaces;
 
 namespace TalentSphere.Controllers
 {
-    [Authorize(Roles = "Admin HR ")]
+    [Authorize(Roles = "Admin, HR ")]   
     [ApiController]
     [Route("api/audits")]
     public class AuditController : ControllerBase
     {
         private readonly IAuditService _auditService;
+        private readonly AuditLogHelper _auditLogHelper;
 
-        public AuditController(IAuditService auditService)
+        public AuditController(IAuditService auditService, AuditLogHelper auditLogHelper)
         {
             _auditService = auditService;
+            _auditLogHelper = auditLogHelper;
         }
 
         /// <summary>
@@ -34,7 +37,7 @@ namespace TalentSphere.Controllers
         {
             try
             {
-            
+
 
                 if (!ModelState.IsValid)
                 {
@@ -46,6 +49,13 @@ namespace TalentSphere.Controllers
                 if (result == null)
                 {
                     return BadRequest("Could not create the audit record.");
+                }
+
+                // Log audit trail - extract UserID from token since endpoint is [Authorize]
+                var userId = _auditLogHelper.ExtractUserIdFromContext(HttpContext);
+                if (userId.HasValue)
+                {
+                    await _auditLogHelper.LogActionAsync(userId.Value, "Create", "Audit", $"Audit record created");
                 }
 
                 return CreatedAtAction(nameof(CreateAudit), result);
@@ -131,6 +141,14 @@ namespace TalentSphere.Controllers
                 var updated = await _auditService.UpdateAuditAsync(id, updateAuditDto);
                 if (updated == null)
                     return NotFound($"Audit with ID {id} not found.");
+
+                // Log audit trail - extract UserID from token since endpoint is [Authorize]
+                var userId = _auditLogHelper.ExtractUserIdFromContext(HttpContext);
+                if (userId.HasValue)
+                {
+                    await _auditLogHelper.LogActionAsync(userId.Value, "Update", "Audit", $"Audit record {id} updated");
+                }
+
                 return Ok(updated);
             }
             catch (Exception ex)
@@ -155,6 +173,14 @@ namespace TalentSphere.Controllers
                 var deleted = await _auditService.DeleteAuditAsync(id);
                 if (!deleted)
                     return NotFound($"Audit with ID {id} not found.");
+
+                // Log audit trail - extract UserID from token since endpoint is [Authorize]
+                var userId = _auditLogHelper.ExtractUserIdFromContext(HttpContext);
+                if (userId.HasValue)
+                {
+                    await _auditLogHelper.LogActionAsync(userId.Value, "Delete", "Audit", $"Audit record {id} deleted (soft delete)");
+                }
+
                 return NoContent();
             }
             catch (Exception ex)
