@@ -1,6 +1,8 @@
+// FILE PATH: Controllers/AuditLogsController.cs
+// CHANGE: Removed the [HttpDelete] endpoint entirely — audit logs must be immutable
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using TalentSphere.DTOs;
 using TalentSphere.Services.Interfaces;
 
@@ -8,7 +10,6 @@ namespace TalentSphere.Controllers
 {
     [ApiController]
     [Route("api/auditlogs")]
-
     [Authorize(Roles = "Admin")]
     public class AuditLogsController : ControllerBase
     {
@@ -18,8 +19,6 @@ namespace TalentSphere.Controllers
         {
             _auditLogService = auditLogService;
         }
-
-  
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -38,29 +37,13 @@ namespace TalentSphere.Controllers
                 var audits = await _auditLogService.GetAllAsync();
                 return Ok(new { message = "Audit logs retrieved successfully.", data = audits });
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 return StatusCode(500, new { Message = "An error occurred while fetching audit logs.", Error = ex.Message });
             }
         }
 
-      
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-                var deleted = await _auditLogService.DeleteAuditLogAsync(id);
-                if (!deleted)
-                    return NotFound(new { message = $"Audit log with ID {id} not found." });
-
-                return Ok(new { message = "Audit log deleted successfully." });
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(500, new { Message = "An error occurred while deleting the audit log.", Error = ex.Message });
-            }
-        }
+        // DELETE endpoint intentionally removed — audit logs are immutable records
+        // and must never be deleted to preserve the compliance trail.
     }
 }

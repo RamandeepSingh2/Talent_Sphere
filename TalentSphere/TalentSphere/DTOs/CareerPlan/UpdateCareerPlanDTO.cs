@@ -4,8 +4,9 @@ namespace TalentSphere.DTOs.CareerPlan
 {
     public class UpdateCareerPlanDTO
     {
-        public string? Title { get; set; }
-        public string? Description { get; set; }
+        public string? Goals { get; set; }
+        public string? TargetRole { get; set; }         // NEW
+        public DateTime? TargetDate { get; set; }       // NEW
         public CareerPlanStatus? Status { get; set; }
     }
 }

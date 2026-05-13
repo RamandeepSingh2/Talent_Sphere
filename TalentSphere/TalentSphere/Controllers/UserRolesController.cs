@@ -34,7 +34,7 @@ namespace TalentSphere.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin,HR,Manager")]
+        [Authorize(Roles = "Admin,HR,Manager,Recruiter")]
         public async Task<IActionResult> GetById(int id)
         {
             var userRole = await _service.GetByIdAsync(id);
@@ -44,7 +44,7 @@ namespace TalentSphere.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin,HR,Manager")]
+        [Authorize(Roles = "Admin,HR,Manager,Recruiter")]
         public async Task<IActionResult> GetAll()
         {
             try

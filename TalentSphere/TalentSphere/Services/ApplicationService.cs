@@ -2,6 +2,7 @@ using AutoMapper;
 using TalentSphere.DTOs;
 using TalentSphere.DTOs.Application;
 using TalentSphere.DTOs.Common;
+using TalentSphere.DTOs.Notification;
 using TalentSphere.Enums;
 using TalentSphere.Models;
 using TalentSphere.Repositories.Interfaces;
@@ -15,17 +16,23 @@ namespace TalentSphere.Services
         private readonly IJobRepository _jobRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<ApplicationService> _logger;
+        private readonly INotificationService _notificationService;      
+        private readonly IUserRoleRepository _userRoleRepository;        
 
         public ApplicationService(
             IApplicationRepository repository,
             IMapper mapper,
             IJobRepository jobRepository,
-            ILogger<ApplicationService> logger)
+            ILogger<ApplicationService> logger,
+            INotificationService notificationService,                    
+            IUserRoleRepository userRoleRepository)
         {
             _repository = repository;
             _mapper = mapper;
             _jobRepository = jobRepository;
             _logger = logger;
+            _notificationService = notificationService;                  
+            _userRoleRepository = userRoleRepository;
         }
 
         public async Task<ApplicationResponseDTO?> CreateApplicationAsync(CreateApplicationDTO dto)
@@ -44,6 +51,30 @@ namespace TalentSphere.Services
 
             var added = await _repository.AddAsync(application);
             await _repository.SaveChangesAsync();
+
+            // ADD THIS: notify all Recruiters and HR about the new application
+            try
+            {
+                var allUserRoles = await _userRoleRepository.GetAllAsync();
+                var recruitersAndHR = allUserRoles.Where(ur =>
+                    ur.Role?.Name == RoleName.Recruiter ||
+                    ur.Role?.Name == RoleName.HR);
+
+                foreach (var ur in recruitersAndHR)
+                {
+                    await _notificationService.CreateNotificationAsync(new CreateNotificationDTO
+                    {
+                        UserID = ur.UserId,
+                        EntityID = added.ApplicationID,
+                        Message = $"New application received for '{job.Title}' from candidate #{dto.CandidateID}.",
+                        Category = NotificationCategory.Recruitment
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to send new application notifications for ApplicationID {Id}", added.ApplicationID);
+            }
 
             _logger.LogInformation("Application {ApplicationID} created for Job {JobID} by Candidate {CandidateID}",
                 added.ApplicationID, dto.JobID, dto.CandidateID);

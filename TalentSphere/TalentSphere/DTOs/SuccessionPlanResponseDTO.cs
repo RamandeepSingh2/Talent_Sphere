@@ -1,3 +1,8 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// FILE PATH: DTOs/SuccessionPlanResponseDTO.cs
+// CHANGE: Added TargetPosition and TargetDate fields
+// ─────────────────────────────────────────────────────────────────────────────
+
 namespace TalentSphere.DTOs
 {
     public class SuccessionPlanResponseDTO
@@ -8,6 +13,11 @@ namespace TalentSphere.DTOs
         public int SuccessorID { get; set; }
         public string? SuccessorName { get; set; }
         public string Status { get; set; } = string.Empty;
+
+        // NEW
+        public string? TargetPosition { get; set; }
+        public DateTime? TargetDate { get; set; }
+
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }

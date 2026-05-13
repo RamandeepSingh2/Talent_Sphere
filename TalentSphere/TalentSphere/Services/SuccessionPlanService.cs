@@ -1,3 +1,7 @@
+// FILE PATH: Services/SuccessionPlanService.cs
+// CHANGE: CreateSuccessionPlanAsync, UpdateAsync, and MapToResponse now handle
+//         TargetPosition and TargetDate
+
 using TalentSphere.DTOs;
 using TalentSphere.Enums;
 using TalentSphere.Models;
@@ -22,6 +26,8 @@ namespace TalentSphere.Services
                 EmployeeID = dto.EmployeeID,
                 SuccessorID = dto.SuccessorID,
                 Status = ParseStatus(dto.Status),
+                TargetPosition = dto.TargetPosition,   // NEW
+                TargetDate = dto.TargetDate,            // NEW
                 CreatedAt = DateTime.UtcNow,
                 IsDeleted = false
             };
@@ -52,6 +58,8 @@ namespace TalentSphere.Services
 
             if (dto.SuccessorID.HasValue) plan.SuccessorID = dto.SuccessorID.Value;
             if (dto.Status != null) plan.Status = ParseStatus(dto.Status);
+            if (dto.TargetPosition != null) plan.TargetPosition = dto.TargetPosition;  // NEW
+            if (dto.TargetDate.HasValue) plan.TargetDate = dto.TargetDate;              // NEW
             plan.UpdatedAt = DateTime.UtcNow;
 
             await _repository.UpdateAsync(plan);
@@ -75,6 +83,8 @@ namespace TalentSphere.Services
             SuccessorID = p.SuccessorID,
             SuccessorName = p.Successor?.Name,
             Status = p.Status.ToString(),
+            TargetPosition = p.TargetPosition,   // NEW
+            TargetDate = p.TargetDate,            // NEW
             CreatedAt = p.CreatedAt,
             UpdatedAt = p.UpdatedAt
         };

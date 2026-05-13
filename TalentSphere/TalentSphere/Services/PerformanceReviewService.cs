@@ -35,21 +35,33 @@ namespace TalentSphere.Services
             var employee = await _employeeRepository.GetByIdAsync(dto.EmployeeID)
                 ?? throw new KeyNotFoundException($"Employee {dto.EmployeeID} not found.");
 
-            var review = _mapper.Map<PerformanceReview>(dto);
-            review.ManagerID = managerId;
-            review.CreatedAt = DateTime.UtcNow;
-            review.IsDeleted = false;
+            var review = new PerformanceReview
+            {
+                EmployeeID = dto.EmployeeID,
+                ManagerID = managerId,
+                Score = dto.Rating,
+                Comments = dto.Comments,
+                Date = dto.ReviewDate,
+                ReviewPeriod = dto.ReviewPeriod,
+                AreasToImprove = dto.AreasToImprove,
+                CreatedAt = DateTime.UtcNow,
+                IsDeleted = false
+            };
 
             var added = await _repository.AddAsync(review);
             await _repository.SaveChangesAsync();
 
             try
             {
+                var periodText = !string.IsNullOrEmpty(dto.ReviewPeriod)
+                    ? $" for {dto.ReviewPeriod}"
+                    : string.Empty;
+
                 await _notificationService.CreateNotificationAsync(new CreateNotificationDTO
                 {
                     UserID = employee.UserId,
                     EntityID = added.ReviewID,
-                    Message = $"A new performance review has been submitted for you with a rating of {dto.Rating}/5.",
+                    Message = $"A new performance review{periodText} has been submitted for you — rating: {dto.Rating}/5.",
                     Category = NotificationCategory.Performance
                 });
             }
@@ -58,7 +70,7 @@ namespace TalentSphere.Services
                 _logger.LogWarning(ex, "Performance review notification failed for EmployeeID {Id}", dto.EmployeeID);
             }
 
-            return _mapper.Map<PerformanceReviewDTO>(added);
+            return MapToDTO(added);
         }
 
         public async Task<PerformanceReviewDTO?> UpdateReviewAsync(int id, UpdatePerformanceReviewDTO dto)
@@ -66,22 +78,26 @@ namespace TalentSphere.Services
             if (dto.Rating.HasValue && (dto.Rating.Value < 1 || dto.Rating.Value > 5))
                 throw new ArgumentException("Rating must be between 1 and 5.");
 
-            var existingReview = await _repository.GetByIdAsync(id);
-            if (existingReview is null) return null;
+            var review = await _repository.GetByIdAsync(id);
+            if (review is null) return null;
 
-            _mapper.Map(dto, existingReview);
-            existingReview.UpdatedAt = DateTime.UtcNow;
+            if (dto.Rating.HasValue) review.Score = dto.Rating.Value;
+            if (dto.Comments != null) review.Comments = dto.Comments;
+            if (dto.ReviewDate.HasValue) review.Date = dto.ReviewDate.Value;
+            if (dto.ReviewPeriod != null) review.ReviewPeriod = dto.ReviewPeriod;
+            if (dto.AreasToImprove != null) review.AreasToImprove = dto.AreasToImprove;
+            review.UpdatedAt = DateTime.UtcNow;
 
-            await _repository.UpdateAsync(existingReview);
+            await _repository.UpdateAsync(review);
             await _repository.SaveChangesAsync();
 
-            return _mapper.Map<PerformanceReviewDTO>(existingReview);
+            return MapToDTO(review);
         }
 
         public async Task<PerformanceReviewDTO?> GetByIdAsync(int id)
         {
             var review = await _repository.GetByIdAsync(id);
-            return review is null ? null : _mapper.Map<PerformanceReviewDTO>(review);
+            return review is null ? null : MapToDTO(review);
         }
 
         public async Task<List<PerformanceReviewListDTO>> GetAllReviewsAsync(int? employeeId = null)
@@ -101,5 +117,9 @@ namespace TalentSphere.Services
             await _repository.SaveChangesAsync();
             return true;
         }
+
+        private PerformanceReviewDTO MapToDTO(PerformanceReview r) =>
+        _mapper.Map<PerformanceReviewDTO>(r);
+
     }
 }

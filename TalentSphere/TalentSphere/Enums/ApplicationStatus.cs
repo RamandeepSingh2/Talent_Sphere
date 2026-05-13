@@ -5,6 +5,7 @@ namespace TalentSphere.Enums
         Pending,
         Submitted,
         Reviewed,
+        Interview,
         Accepted,
         Rejected
     }

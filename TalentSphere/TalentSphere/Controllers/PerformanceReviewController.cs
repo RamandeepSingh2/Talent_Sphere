@@ -21,7 +21,7 @@ namespace TalentSphere.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin,HR,Manager")]
+        [Authorize(Roles = "HR,Manager")]
         public async Task<ActionResult<PerformanceReviewDTO>> Create([FromBody] CreatePerformanceReviewDTO dto)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -54,7 +54,7 @@ namespace TalentSphere.Controllers
         }
 
         [HttpPut("{id:int}")]
-        [Authorize(Roles = "Admin,HR,Manager")]
+        [Authorize(Roles = "HR,Manager")]
         public async Task<ActionResult<PerformanceReviewDTO>> Update(int id, [FromBody] UpdatePerformanceReviewDTO dto)
         {
             var updated = await _service.UpdateReviewAsync(id, dto);
@@ -68,7 +68,7 @@ namespace TalentSphere.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        [Authorize(Roles = "Admin,HR,Manager")]
+        [Authorize(Roles = "HR,Manager")]
         public async Task<IActionResult> Delete(int id)
         {
             var deleted = await _service.DeleteReviewAsync(id);

@@ -1,3 +1,6 @@
+// FILE PATH: Services/InterviewService.cs
+// CHANGE: Added IScreeningRepository injection + screening guard in ScheduleInterviewAsync
+
 using AutoMapper;
 using TalentSphere.DTOs;
 using TalentSphere.DTOs.Interview;
@@ -13,6 +16,7 @@ namespace TalentSphere.Services
     {
         private readonly IInterviewRepository _interviewRepository;
         private readonly IApplicationRepository _applicationRepository;
+        private readonly IScreeningRepository _screeningRepository;   // NEW
         private readonly INotificationService _notificationService;
         private readonly IMapper _mapper;
         private readonly ILogger<InterviewService> _logger;
@@ -20,12 +24,14 @@ namespace TalentSphere.Services
         public InterviewService(
             IInterviewRepository interviewRepository,
             IApplicationRepository applicationRepository,
+            IScreeningRepository screeningRepository,               // NEW
             INotificationService notificationService,
             IMapper mapper,
             ILogger<InterviewService> logger)
         {
             _interviewRepository = interviewRepository;
             _applicationRepository = applicationRepository;
+            _screeningRepository = screeningRepository;             // NEW
             _notificationService = notificationService;
             _mapper = mapper;
             _logger = logger;
@@ -69,6 +75,14 @@ namespace TalentSphere.Services
         {
             var interview = await _interviewRepository.GetByIdAsync(id);
             if (interview == null) return false;
+
+            // Block deletion if interview is already concluded
+            if (interview.Status == InterviewStatus.Passed ||
+                interview.Status == InterviewStatus.Failed ||
+                interview.Status == InterviewStatus.Completed)
+                throw new InvalidOperationException(
+                    $"Cannot delete a '{interview.Status}' interview. Completed interviews are permanent records.");
+
             await _interviewRepository.DeleteAsync(interview);
             await _interviewRepository.SaveChangesAsync();
             return true;
@@ -84,6 +98,34 @@ namespace TalentSphere.Services
             if (application.Status == ApplicationStatus.Rejected)
                 throw new InvalidOperationException("Cannot schedule an interview for a rejected application.");
 
+            if (application.Status == ApplicationStatus.Accepted)
+                throw new InvalidOperationException("Cannot schedule an interview — this candidate has already been selected.");
+
+            // Check screening passed BEFORE changing any status
+            var hasPassedScreening = await _screeningRepository.HasPassedScreeningAsync(dto.ApplicationID);
+            if (!hasPassedScreening)
+                throw new InvalidOperationException(
+                    "Cannot schedule an interview: this application has not passed screening yet. " +
+                    "Please complete screening with a Pass result first.");
+
+            // Check no active interview already exists for this application
+            var existingInterviews = await _interviewRepository.GetByApplicationIdAsync(dto.ApplicationID);
+            var activeInterview = existingInterviews.FirstOrDefault(i =>
+                i.Status == InterviewStatus.Scheduled ||
+                i.Status == InterviewStatus.Passed);
+
+            if (activeInterview != null)
+            {
+                if (activeInterview.Status == InterviewStatus.Passed)
+                    throw new InvalidOperationException(
+                        "Cannot schedule another interview — this candidate has already passed. Proceed to final selection.");
+
+                if (activeInterview.Status == InterviewStatus.Scheduled)
+                    throw new InvalidOperationException(
+                        "Cannot schedule another interview — an active interview already exists for this application. Cancel it first.");
+            }
+
+            // All checks passed — now create the interview
             var interview = new Interview
             {
                 ApplicationID = dto.ApplicationID,
@@ -97,12 +139,9 @@ namespace TalentSphere.Services
 
             await _interviewRepository.AddAsync(interview);
 
-            // Update application to Reviewed state so it's visible in the pipeline
-            if (application.Status == ApplicationStatus.Pending || application.Status == ApplicationStatus.Submitted)
-            {
-                application.Status = ApplicationStatus.Reviewed;
-                application.UpdatedAt = DateTime.UtcNow;
-            }
+            // Advance application status to Interview — only now after all checks passed
+            application.Status = ApplicationStatus.Interview;
+            application.UpdatedAt = DateTime.UtcNow;
 
             await _interviewRepository.SaveChangesAsync();
             await _applicationRepository.SaveChangesAsync();
@@ -114,7 +153,6 @@ namespace TalentSphere.Services
 
             return MapToResponseDTO(interview, application);
         }
-
         public async Task<InterviewResponseDTO> UpdateInterviewStatusAsync(int id, UpdateInterviewStatusDTO dto)
         {
             var interview = await _interviewRepository.GetByIdWithDetailsAsync(id)
@@ -122,12 +160,12 @@ namespace TalentSphere.Services
 
             var allowedTransitions = new Dictionary<InterviewStatus, List<InterviewStatus>>
             {
-                [InterviewStatus.Pending]    = [InterviewStatus.Scheduled, InterviewStatus.Cancelled],
-                [InterviewStatus.Scheduled]  = [InterviewStatus.Completed, InterviewStatus.Passed, InterviewStatus.Failed, InterviewStatus.Cancelled],
-                [InterviewStatus.Completed]  = [InterviewStatus.Passed, InterviewStatus.Failed],
-                [InterviewStatus.Passed]     = [],
-                [InterviewStatus.Failed]     = [],
-                [InterviewStatus.Cancelled]  = []
+                [InterviewStatus.Pending] = [InterviewStatus.Scheduled, InterviewStatus.Cancelled],
+                [InterviewStatus.Scheduled] = [InterviewStatus.Completed, InterviewStatus.Passed, InterviewStatus.Failed, InterviewStatus.Cancelled],
+                [InterviewStatus.Completed] = [InterviewStatus.Passed, InterviewStatus.Failed],
+                [InterviewStatus.Passed] = [],
+                [InterviewStatus.Failed] = [],
+                [InterviewStatus.Cancelled] = []
             };
 
             if (!allowedTransitions[interview.Status].Contains(dto.Status))

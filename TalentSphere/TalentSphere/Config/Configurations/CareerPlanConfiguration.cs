@@ -13,31 +13,46 @@ namespace TalentSphere.Config.Configurations
             builder.HasKey(c => c.PlanID);
             builder.Property(c => c.PlanID).ValueGeneratedOnAdd();
 
-            builder.Property(c => c.Goals).IsRequired();
-            builder.Property(c => c.Timeline).HasMaxLength(255);
+            builder.Property(c => c.Goals)
+                   .IsRequired()
+                   .HasMaxLength(2000);
 
+            // NEW: target role
+            builder.Property(c => c.TargetRole)
+                   .HasMaxLength(200)
+                   .IsRequired(false);
 
-            // --- Enum Configuration ---
+            // NEW: target date
+            builder.Property(c => c.TargetDate)
+                   .IsRequired(false);
+
+            // NEW: FK to PerformanceReview (nullable)
+            builder.Property(c => c.ReviewID)
+                   .IsRequired(false);
+
             builder.Property(c => c.Status)
-                   .HasConversion<string>() 
+                   .HasConversion<string>()
                    .HasMaxLength(50)
                    .IsRequired()
                    .HasDefaultValue(CareerPlanStatus.Planned);
 
-            
-
-            // Global Filter: Automatically hides IsDeleted = true from all queries
             builder.HasQueryFilter(c => !c.IsDeleted);
 
             builder.Property(c => c.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
             builder.Property(c => c.UpdatedAt).HasDefaultValueSql("GETUTCDATE()");
+            builder.Property(c => c.IsDeleted).HasDefaultValue(false);
 
-            // --- Soft Delete Configuration ---
-            builder.Property(c => c.IsDeleted)
-                   .HasDefaultValue(false);
+            builder.HasOne(c => c.Employee)
+                   .WithMany()
+                   .HasForeignKey(c => c.EmployeeID)
+                   .OnDelete(DeleteBehavior.Restrict);
 
-            //here we set the relationship between CareerPlan and Employee, with a foreign key of EmployeeID. We also specify that if an Employee is deleted, we want to restrict the deletion of related CareerPlans (i.e., prevent cascading deletes).
-            builder.HasOne(c => c.Employee).WithMany().HasForeignKey(c => c.EmployeeID).OnDelete(DeleteBehavior.Restrict);
+            // NEW: optional FK to PerformanceReview
+            builder.HasOne(c => c.Review)
+                   .WithMany()
+                   .HasForeignKey(c => c.ReviewID)
+                   .IsRequired(false)
+                   .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

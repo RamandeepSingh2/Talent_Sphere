@@ -19,20 +19,23 @@ namespace TalentSphere.Mappers
             CreateMap<CreateComplianceRecordDTO, ComplianceRecord>()
                 .ForMember(dest => dest.Type, opt => opt.MapFrom(src => ParseComplianceType(src.RecordType)))
                 .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Description))
-                .ForMember(dest => dest.Result, opt => opt.MapFrom(src => "Pending"))
-                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.Result, opt => opt.MapFrom(src => src.Result ?? "Pending"))  // use what user sends
+                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date ?? DateTime.UtcNow))  // use what user sends
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
 
             CreateMap<UpdateComplianceRecordDTO, ComplianceRecord>()
                 .ForMember(dest => dest.Type, opt => opt.MapFrom(src => ParseComplianceType(src.RecordType)))
                 .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.Result, opt => opt.MapFrom(src => src.Result))  // map result from DTO
+                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date))    // map date from DTO
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
 
             CreateMap<ComplianceRecord, ComplianceRecordResponseDTO>()
                 .ForMember(dest => dest.RecordType, opt => opt.MapFrom(src => src.Type.ToString()))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Notes))
-                .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src =>
-                    src.Employee != null ? src.Employee.Name : null));
+                .ForMember(dest => dest.Result, opt => opt.MapFrom(src => src.Result))   // ADD
+                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date))      // ADD
+                .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.Employee != null ? src.Employee.Name : null));
 
             // Audit mappings
             CreateMap<CreateAuditDTO, Audit>()
@@ -87,14 +90,16 @@ namespace TalentSphere.Mappers
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
 
             CreateMap<PerformanceReview, PerformanceReviewDTO>()
-                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => (int)src.Score))
-                .ForMember(dest => dest.ReviewDate, opt => opt.MapFrom(src => src.Date))
-                .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.Employee != null ? src.Employee.Name : null));
+                    .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => (int)src.Score))
+                    .ForMember(dest => dest.ReviewDate, opt => opt.MapFrom(src => src.Date))
+                    .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.Employee != null ? src.Employee.Name : null))
+                    .ForMember(dest => dest.ManagerName, opt => opt.MapFrom(src => src.Manager != null ? src.Manager.Name : null));
 
             CreateMap<PerformanceReview, PerformanceReviewListDTO>()
                 .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => (int)src.Score))
                 .ForMember(dest => dest.ReviewDate, opt => opt.MapFrom(src => src.Date))
-                .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.Employee != null ? src.Employee.Name : null));
+                .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.Employee != null ? src.Employee.Name : null))
+                .ForMember(dest => dest.ManagerName, opt => opt.MapFrom(src => src.Manager != null ? src.Manager.Name : null));
 
             //Notification Mapping
             CreateMap<CreateNotificationDTO, Notification>()
@@ -105,18 +110,22 @@ namespace TalentSphere.Mappers
                 .ForMember(d => d.Status, opt => opt.MapFrom(s => s.Status.ToString()));
             // CareerPlan Mapping Configuration
             CreateMap<CreateCareerPlanDTO, CareerPlan>()
-                .ForMember(dest => dest.Goals, opt => opt.MapFrom(src => src.Title))
-                .ForMember(dest => dest.Timeline, opt => opt.MapFrom(src => src.Description ?? string.Empty));
+     .ForMember(dest => dest.Goals, opt => opt.MapFrom(src => src.Goals))
+     .ForMember(dest => dest.TargetRole, opt => opt.MapFrom(src => src.TargetRole))
+     .ForMember(dest => dest.TargetDate, opt => opt.MapFrom(src => src.TargetDate))
+     .ForMember(dest => dest.ReviewID, opt => opt.MapFrom(src => src.ReviewID));
 
             CreateMap<UpdateCareerPlanDTO, CareerPlan>()
-                .ForMember(dest => dest.Goals, opt => opt.MapFrom(src => src.Title))
-                .ForMember(dest => dest.Timeline, opt => opt.MapFrom(src => src.Description))
-                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+                .ForMember(dest => dest.Goals, opt => opt.MapFrom(src => src.Goals))
+                .ForMember(dest => dest.TargetRole, opt => opt.MapFrom(src => src.TargetRole))
+                .ForMember(dest => dest.TargetDate, opt => opt.MapFrom(src => src.TargetDate));
 
             CreateMap<CareerPlan, CareerPlanResponseDTO>()
-                .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Goals))
-                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Timeline))
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
+                .ForMember(dest => dest.Goals, opt => opt.MapFrom(src => src.Goals))
+                .ForMember(dest => dest.TargetRole, opt => opt.MapFrom(src => src.TargetRole))
+                .ForMember(dest => dest.TargetDate, opt => opt.MapFrom(src => src.TargetDate))
+                .ForMember(dest => dest.ReviewID, opt => opt.MapFrom(src => src.ReviewID))
+                .ForMember(dest => dest.ReviewPeriod, opt => opt.MapFrom(src => src.Review != null ? src.Review.ReviewPeriod : null))
                 .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.Employee != null ? src.Employee.Name : null));
 
             // Notification Mapping Configuration

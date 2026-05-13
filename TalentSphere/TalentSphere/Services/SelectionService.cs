@@ -1,3 +1,7 @@
+// FILE PATH: Services/SelectionService.cs
+// CHANGE: Added IScreeningRepository + IInterviewRepository injection
+//         Added two pipeline guards inside MakeDecisionAsync
+
 using AutoMapper;
 using TalentSphere.DTOs;
 using TalentSphere.DTOs.Notification;
@@ -17,6 +21,8 @@ namespace TalentSphere.Services
         private readonly IUserRoleRepository _userRoleRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly INotificationService _notificationService;
+        private readonly IScreeningRepository _screeningRepository;   // NEW
+        private readonly IInterviewRepository _interviewRepository;   // NEW
         private readonly IMapper _mapper;
         private readonly ILogger<SelectionService> _logger;
 
@@ -27,6 +33,8 @@ namespace TalentSphere.Services
             IUserRoleRepository userRoleRepository,
             IRoleRepository roleRepository,
             INotificationService notificationService,
+            IScreeningRepository screeningRepository,               // NEW
+            IInterviewRepository interviewRepository,               // NEW
             IMapper mapper,
             ILogger<SelectionService> logger)
         {
@@ -36,6 +44,8 @@ namespace TalentSphere.Services
             _userRoleRepository = userRoleRepository;
             _roleRepository = roleRepository;
             _notificationService = notificationService;
+            _screeningRepository = screeningRepository;             // NEW
+            _interviewRepository = interviewRepository;             // NEW
             _mapper = mapper;
             _logger = logger;
         }
@@ -97,7 +107,24 @@ namespace TalentSphere.Services
             if (existing != null)
                 throw new InvalidOperationException($"A selection decision already exists for application {dto.ApplicationID}.");
 
-            // 3. Create the Selection record
+            // NEW 3. Pipeline guard: must have a passed screening
+            var hasPassedScreening = await _screeningRepository.HasPassedScreeningAsync(dto.ApplicationID);
+            if (!hasPassedScreening)
+                throw new InvalidOperationException(
+                    "Cannot make a hiring decision: this application has not passed screening. " +
+                    "Complete screening with a Pass result before making a selection.");
+
+            // NEW 4. Pipeline guard: must have at least one completed or passed interview
+            var interviews = await _interviewRepository.GetByApplicationIdAsync(dto.ApplicationID);
+            var hasCompletedInterview = interviews.Any(i =>
+                i.Status == InterviewStatus.Passed ||
+                i.Status == InterviewStatus.Completed);
+            if (!hasCompletedInterview)
+                throw new InvalidOperationException(
+                    "Cannot make a hiring decision: the candidate has not completed an interview yet. " +
+                    "Schedule and complete an interview before making a selection.");
+
+            // 5. Create the Selection record
             var selection = new Selection
             {
                 ApplicationID = dto.ApplicationID,

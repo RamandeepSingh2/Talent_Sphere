@@ -8,9 +8,7 @@ namespace TalentSphere.Config.Configurations
     {
         public void Configure(EntityTypeBuilder<PerformanceReview> builder)
         {
-            //Table
             builder.ToTable("PerformanceReviews");
-            //key Mapping
             builder.HasKey(p => p.ReviewID);
             builder.Property(p => p.ReviewID).ValueGeneratedOnAdd();
 
@@ -18,28 +16,25 @@ namespace TalentSphere.Config.Configurations
                    .HasColumnType("decimal(5,2)")
                    .IsRequired();
 
-            builder.Property(p => p.Comments)
-                   .HasMaxLength(2000);
+            builder.Property(p => p.Comments).HasMaxLength(2000);
 
-            builder.Property(p => p.Date)
-                               .HasColumnType("datetime")
-                               .IsRequired();
-            // Timestamps
+            // NEW
+            builder.Property(p => p.ReviewPeriod).HasMaxLength(50).IsRequired(false);
+            builder.Property(p => p.AreasToImprove).HasMaxLength(2000).IsRequired(false);
+
+            builder.Property(p => p.Date).HasColumnType("datetime").IsRequired();
+
             builder.Property(p => p.CreatedAt)
                    .HasDefaultValueSql("GETUTCDATE()")
-            .ValueGeneratedOnAdd();
+                   .ValueGeneratedOnAdd();
 
             builder.Property(p => p.UpdatedAt)
                    .HasDefaultValueSql("GETUTCDATE()")
                    .ValueGeneratedOnAddOrUpdate();
 
-            //  Soft Delete Logic
-            builder.Property(p => p.IsDeleted)
-                   .HasDefaultValue(false);
+            builder.Property(p => p.IsDeleted).HasDefaultValue(false);
 
-            // This line automatically hides deleted records from all queries
             builder.HasQueryFilter(p => !p.IsDeleted);
-
 
             builder.HasOne(p => p.Employee)
                    .WithMany()
@@ -50,6 +45,10 @@ namespace TalentSphere.Config.Configurations
                    .WithMany()
                    .HasForeignKey(p => p.ManagerID)
                    .OnDelete(DeleteBehavior.Restrict);
+
+            // CareerPlanID FK removed — link goes one way only:
+            // CareerPlan.ReviewID → PerformanceReview
+            // No reverse FK needed here
         }
     }
 }

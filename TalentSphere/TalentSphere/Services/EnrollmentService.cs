@@ -37,6 +37,21 @@ namespace TalentSphere.Services
             if (training.status == TrainingStatus.Cancelled)
                 throw new InvalidOperationException("Cannot enroll in a cancelled training.");
 
+            // NEW: check max capacity
+            if (training.MaxCapacity.HasValue)
+            {
+                var currentCount = await _repository.GetActiveCountByTrainingAsync(dto.TrainingID);
+                if (currentCount >= training.MaxCapacity.Value)
+                    throw new InvalidOperationException(
+                        $"Training '{training.Title}' is full. Maximum capacity of {training.MaxCapacity} has been reached.");
+            }
+
+            // NEW: check duplicate enrollment
+            var existing = await _repository.GetByEmployeeAndTrainingAsync(dto.EmployeeID, dto.TrainingID);
+            if (existing != null)
+                throw new InvalidOperationException(
+                    $"This employee is already enrolled in '{training.Title}'.");
+
             var employee = await _employeeRepository.GetByIdAsync(dto.EmployeeID)
                 ?? throw new KeyNotFoundException($"Employee {dto.EmployeeID} not found.");
 
@@ -79,7 +94,6 @@ namespace TalentSphere.Services
             var withDetails = await _repository.GetByIdAsync(added.EnrollmentID);
             return MapToResponse(withDetails ?? added);
         }
-
         public async Task<EnrollmentResponseDTO?> GetByIdAsync(int id)
         {
             var enrollment = await _repository.GetByIdAsync(id);

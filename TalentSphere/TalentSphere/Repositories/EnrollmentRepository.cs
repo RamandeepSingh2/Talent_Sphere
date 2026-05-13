@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TalentSphere.Config;
+using TalentSphere.Enums;
 using TalentSphere.Models;
 using TalentSphere.Repositories.Interfaces;
 
@@ -57,6 +58,19 @@ namespace TalentSphere.Repositories
                 .OrderByDescending(e => e.CreatedAt)
                 .ToListAsync();
         }
+
+        public async Task<int> GetActiveCountByTrainingAsync(int trainingId) =>
+             await _context.Set<Enrollment>()
+        .CountAsync(e => e.TrainingID == trainingId
+                      && e.status != EnrollmentStatus.Cancelled
+                      && !e.IsDeleted);
+
+        public async Task<Enrollment?> GetByEmployeeAndTrainingAsync(int employeeId, int trainingId) =>
+            await _context.Set<Enrollment>()
+                .FirstOrDefaultAsync(e => e.EmployeeID == employeeId
+                                       && e.TrainingID == trainingId
+                                       && !e.IsDeleted);
+
 
         public Task UpdateAsync(Enrollment enrollment)
         {

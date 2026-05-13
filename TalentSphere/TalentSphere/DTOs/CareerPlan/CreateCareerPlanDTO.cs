@@ -10,10 +10,17 @@ namespace TalentSphere.DTOs.CareerPlan
 
         [Required]
         [MaxLength(500)]
-        public string Title { get; set; }
+        public string Goals { get; set; }
 
-        [MaxLength(2000)]
-        public string? Description { get; set; }
+        // NEW: what position/role they are aiming for
+        [MaxLength(200)]
+        public string? TargetRole { get; set; }
+
+        // NEW: when they should achieve the goals
+        public DateTime? TargetDate { get; set; }
+
+        // NEW: which review triggered this plan
+        public int? ReviewID { get; set; }
 
         [Required]
         public CareerPlanStatus Status { get; set; } = CareerPlanStatus.Planned;

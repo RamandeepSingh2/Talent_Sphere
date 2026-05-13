@@ -44,6 +44,7 @@ namespace TalentSphere.Repositories
         {
             var query = _context.Set<PerformanceReview>()
          .Include(p => p.Employee)
+         .Include(p => p.Manager)
          .Where(p => !p.IsDeleted);
 
             // Add filter only if employeeId is provided

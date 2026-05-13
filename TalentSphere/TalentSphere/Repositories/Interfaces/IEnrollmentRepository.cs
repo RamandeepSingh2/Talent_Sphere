@@ -11,5 +11,7 @@ namespace TalentSphere.Repositories.Interfaces
         Task<List<Enrollment>> GetByTrainingIdAsync(int trainingId);
         Task UpdateAsync(Enrollment enrollment);
         Task SaveChangesAsync();
+        Task<int> GetActiveCountByTrainingAsync(int trainingId);
+        Task<Enrollment?> GetByEmployeeAndTrainingAsync(int employeeId, int trainingId);
     }
 }

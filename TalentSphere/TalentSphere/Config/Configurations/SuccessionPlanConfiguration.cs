@@ -1,3 +1,6 @@
+// FILE PATH: Config/Configurations/SuccessionPlanConfiguration.cs
+// CHANGE: Added Property configuration for TargetPosition and TargetDate
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TalentSphere.Models;
@@ -14,6 +17,12 @@ namespace TalentSphere.Config.Configurations
             builder.Property(s => s.SuccessionID).ValueGeneratedOnAdd();
 
             builder.Property(s => s.Status).HasColumnName("status").HasConversion<string>().HasDefaultValue(SuccessionStatus.Planned);
+
+            // NEW: optional target position text (e.g. "Head of Engineering")
+            builder.Property(s => s.TargetPosition).HasMaxLength(200).IsRequired(false);
+
+            // NEW: optional target readiness date
+            builder.Property(s => s.TargetDate).IsRequired(false);
 
             builder.Property(s => s.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
             builder.Property(s => s.UpdatedAt).HasDefaultValueSql("GETUTCDATE()");

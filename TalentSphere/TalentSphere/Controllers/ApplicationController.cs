@@ -1,3 +1,7 @@
+// FILE PATH: Controllers/ApplicationController.cs
+// CHANGE: Removed "Manager" from [Authorize] on GetById, GetAll, GetByJob, and Update
+//         Manager should not see all candidate applications — only Recruiter/HR/Admin
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TalentSphere.DTOs;
@@ -41,7 +45,7 @@ namespace TalentSphere.Controllers
         }
 
         /// <summary>Get a single application by ID.</summary>
-        [Authorize(Roles = "Admin,HR,Recruiter,Manager")]
+        [Authorize(Roles = "Admin,HR,Recruiter")]   // removed Manager
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -53,7 +57,7 @@ namespace TalentSphere.Controllers
         /// Get all applications with optional filters and pagination.
         /// Query params: jobId, candidateId, status, page, pageSize
         /// </summary>
-        [Authorize(Roles = "Admin,HR,Recruiter,Manager")]
+        [Authorize(Roles = "Admin,HR,Recruiter")]   // removed Manager
         [HttpGet]
         public async Task<IActionResult> GetAll(
             [FromQuery] int? jobId = null,
@@ -76,7 +80,7 @@ namespace TalentSphere.Controllers
         }
 
         /// <summary>Get all applications for a specific job.</summary>
-        [Authorize(Roles = "Admin,HR,Recruiter,Manager")]
+        [Authorize(Roles = "Admin,HR,Recruiter")]   // removed Manager
         [HttpGet("job/{jobId}")]
         public async Task<IActionResult> GetByJob(int jobId)
         {
@@ -94,7 +98,7 @@ namespace TalentSphere.Controllers
         }
 
         /// <summary>Update application status or data.</summary>
-        [Authorize(Roles = "Admin,HR,Recruiter,Manager")]
+        [Authorize(Roles = "Admin,HR,Recruiter")]   // removed Manager
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateApplicationDTO dto)
         {

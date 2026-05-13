@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TalentSphere.Config;
+using TalentSphere.Enums;
 using TalentSphere.Models;
 using TalentSphere.Repositories.Interfaces;
 
@@ -59,5 +60,14 @@ namespace TalentSphere.Repositories
         {
             await _context.SaveChangesAsync();
         }
+
+        public async Task<bool> HasPassedScreeningAsync(int applicationId)
+        {
+            return await _context.Screenings
+                .AnyAsync(s => s.ApplicationID == applicationId
+                            && s.Result == ScreeningResult.Pass
+                            && !s.IsDeleted);
+        }
+
     }
 }

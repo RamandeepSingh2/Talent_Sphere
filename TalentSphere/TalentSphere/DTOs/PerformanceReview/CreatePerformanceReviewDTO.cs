@@ -14,6 +14,14 @@ namespace TalentSphere.DTOs.PerformanceReview
         [MaxLength(1000)]
         public string? Comments { get; set; }
 
+        // NEW: review period e.g. "Q1 2026", "Annual 2025"
+        [MaxLength(50)]
+        public string? ReviewPeriod { get; set; }
+
+        // NEW: areas the employee needs to improve
+        [MaxLength(2000)]
+        public string? AreasToImprove { get; set; }
+
         [Required]
         public DateTime ReviewDate { get; set; }
     }
